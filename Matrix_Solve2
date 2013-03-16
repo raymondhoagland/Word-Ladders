@@ -1,0 +1,118 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+public class matrixSolve2{
+  static int i=0;
+	static void print(int[][] used){
+		for(int i=0; i<used.length; i++){
+			for(int k=0; k<used[i].length; k++){
+				System.out.print(used[i][k]+" ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+	}
+	static int[][] changeGrid(int[][] arr){
+		for(int i=0; i<arr.length;i++){
+			for(int k=0; k<arr[i].length; k++){
+				if(arr[i][k]!=0)
+					arr[i][k]++;
+			}
+		}
+		return arr;
+	}
+	static boolean findPath(int start_row, int start_col, int[][] arr, int credits, ArrayList<String>used){
+		i++;
+		//print(arr);
+		System.out.println("starting location = "+start_row+" "+start_col+" #steps =  "+used.size()+ " credits = "+credits +" tries = "+i);
+		if(credits<5){
+			return false;
+		}
+		if(start_row==arr.length-1&&start_col==arr[start_row].length-1&&(credits==5))
+			return true;
+		int[][] tmpgrid = changeGrid(arr);
+		for(int j=0; j<4; j++){
+			if(j==3){
+				if(start_col>0){
+					used.add("west");
+				//	int[][] tmpgrid = changeGrid(arr);
+					if(findPath(start_row, start_col-1, tmpgrid, credits-arr[start_row][start_col-1], used)){
+						for(int i=0; i<used.size(); i++){
+							System.out.println(used.get(i));
+						}
+						System.exit(0);
+					}
+					else{
+						used.remove(used.size()-1);
+				//		tmpgrid = arr;
+					}
+				}
+			}
+			if(j==2){
+				if(start_row<arr.length-1){
+					used.add("south");
+				//	int[][] tmpgrid = changeGrid(arr);
+					if(findPath(start_row+1, start_col, tmpgrid, credits-arr[start_row+1][start_col], used)){
+						for(int i=0; i<used.size(); i++){
+							System.out.println(used.get(i));
+						}
+						System.exit(0);
+					}
+					else{
+						used.remove(used.size()-1);
+					//	tmpgrid = arr;
+					}
+				}	
+			}
+			if(j==1){
+				if(start_col<arr[start_row].length-1){
+					used.add("east");
+					//int[][] tmpgrid = changeGrid(arr);
+					if(findPath(start_row, start_col+1, tmpgrid, credits-arr[start_row][start_col+1], used)){
+						for(int i=0; i<used.size(); i++){
+							System.out.println(used.get(i));
+						}
+						System.exit(0);
+					}
+					else{
+						used.remove(used.size()-1);
+						//tmpgrid = arr;
+					}
+				}
+			}
+			else{
+				if(start_row>0){
+					used.add("north");
+					//int[][] tmpgrid = changeGrid(arr);
+					if(findPath(start_row-1, start_col, tmpgrid, credits-arr[start_row-1][start_col], used)){
+						for(int i=0; i<used.size(); i++){
+							System.out.println(used.get(i));
+						}
+						System.exit(0);
+					}
+					else{
+						used.remove(used.size()-1);
+					//	tmpgrid = arr;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	public static void main(String[] args){
+		//int[][]arr = {{0,8,1,7,8,8,5,2,9,5,9,5}, {8,5,1,1,5,6,9,4,4,5,2,1}, {7,2,3,5,2,9,2,6,9,3,9,4},{9,2,5,9,8,9,5,7,7,5,9,6},{2,4,6,7,1,4,2,6,6,2,5,8},{2,8,1,5,3,8,4,9,7,5,2,3},{2,9,3,5,6,7,2,4,9,4,2,5},{6,3,1,7,8,2,3,3,6,7,9,3},{2,5,7,4,2,7,8,5,5,3,5,8},{5,2,9,8,3,6,1,4,9,5,6,3},{4,6,9,8,5,4,9,7,6,4,6,8},{2,7,7,1,9,9,7,3,7,2,2,0}};
+		int[][]arr = {{8,8,4,4,0}, {4,9,6,4,8}, {8,6,4,1,2},{4,8,2,6,3},{0,6,8,8,4}};
+		print(arr);
+		/*System.out.println();
+		arr=changeGrid(arr);
+		print(arr);
+		System.out.println();
+		arr=changeGrid(arr);
+		print(arr);
+		System.out.println();
+		arr=changeGrid(arr);
+		print(arr);
+		System.out.println();
+		*/
+		System.out.println(findPath(0,0,arr,444, new ArrayList()));
+	}
+}

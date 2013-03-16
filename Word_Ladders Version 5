@@ -1,0 +1,113 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.Stack;
+
+public class wordLadder_ver5{
+  static Set<String> used = new HashSet<String>();
+	static Set<String> dictionary = new HashSet<String>();
+	static boolean isValidWord(String word){
+		if(dictionary.contains(word))
+			return true;
+		return false;
+	}
+	static int numDiffLetters(String str1, String str2){
+		int count=0;
+		if(str1.compareTo(str2)==0)
+			return 0;
+		if(str1.length()!=str2.length())
+			return -1;
+		for(int i=0; i<str1.length(); i++){
+			if(str1.charAt(i)!=str2.charAt(i))
+				count++;
+			if(count>1)
+				return -1;
+		}
+		return count;
+	}
+	static void createDictionary(){
+		//File file = new File("C:/Users/Raymond/Downloads/eclipse-SDK-4.2-win32-x86_64/eclipse/configuration/org.eclipse.osgi/bundles/156/2/.cp/dictionaries/en_US.dictionary"); //reference file
+		String line ="";
+		File file = new File("C:/Users/Raymond/Downloads/eclipse-SDK-4.2-win32-x86_64/eclipse/configuration/org.eclipse.osgi/bundles/156/2/.cp/dictionaries/wordsEn.txt"); //reference file
+		//line ="";
+		try {
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()){
+				line=scanner.nextLine();
+				line=line.toLowerCase();
+				dictionary.add(line);
+			}
+			scanner.close();
+		}
+		catch(FileNotFoundException e){
+			System.out.println("File not found");
+		}
+	}
+	static LinkedList<String> oneStep(String curr_word, String targetWord){
+		int initial = numDiffLetters(curr_word, targetWord);
+		LinkedList<String> bestBets = new LinkedList<String>();	
+		LinkedList<String> valids = new LinkedList<String>();
+		for(Iterator<String> i = dictionary.iterator();i.hasNext();){
+			String line = i.next();
+			if(numDiffLetters(line,curr_word)==1){
+				if(numDiffLetters(line, targetWord)<initial)
+					bestBets.add(line);
+				else
+					valids.add(line);
+			}
+		}
+		bestBets.addAll(valids);
+		return bestBets;
+	}
+	static Stack<String> createLadder(String startWord, String targetWord){
+		createDictionary();
+		if(startWord.length()!=targetWord.length()||!isValidWord(startWord)||!isValidWord(targetWord)){
+			System.out.println("Problem with initiating.");
+			return null;
+		}
+		startWord = startWord.toLowerCase();
+		used.add(startWord);
+		Queue<Stack<String>> q = new LinkedList<Stack<String>>();
+		Stack<String> start = new Stack<String>();
+		start.add(startWord);
+		q.add(start);
+		return createTheLadder(startWord, targetWord, q);
+	}
+	static Stack<String> createTheLadder(String startWord, String targetWord, Queue<Stack<String>> q ){
+		while(!q.isEmpty()){
+			Stack<String> current = q.poll();
+			if(current.contains(targetWord))
+				return current;
+			else{
+				LinkedList<String> newWords = oneStep(current.peek(), targetWord);
+				for(Iterator<String> i = newWords.iterator(); i.hasNext();){
+					String newWord = i.next();
+					if(!used.contains(newWord)){
+						used.add(newWord);
+						Stack<String> new_list = new Stack<String>();
+						new_list.addAll(current);
+						new_list.add(newWord);
+						q.add(new_list);
+					}
+				}
+			}
+		}
+		System.out.println("No path available");
+		return null;
+	}
+	public static void main(String[] args){
+		double time = System.currentTimeMillis();
+		Stack<String> solution = createLadder("feat", "peek");
+		if(solution!=null)
+			for(Iterator<String> i = solution.iterator(); i.hasNext();){
+				System.out.print(i.next()+" ");
+			}
+		System.out.println();
+		System.out.println(System.currentTimeMillis()-time);
+	}
+}
